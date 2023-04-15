@@ -1,0 +1,23 @@
+<!-- templates/index.html -->
+{% extends "_base.html" %}
+
+{% load compress %}
+{% load static %}
+
+<!-- title is passed in from views.py -->
+{% block title %} {{ title }} {% endblock title %}
+
+{% block content %}
+
+<div>
+    <!-- whitelisted devices -->
+    <h4 class="text-3xl text-white font-semibold ml-4 mb-2">Whitelisted Devices</h4>
+    <!-- tba gray text -->
+    <p class="text-md text-white ml-4 mb-4 opacity-60">TBA</p>
+
+    <div id="w-devices-container" class="flex scroll-x"></div>
+</div>
+
+<!-- card script -->
+<script src="{% static 'src/card.js' %}"></script>
+{% endblock content %}

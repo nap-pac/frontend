@@ -1,0 +1,11 @@
+# node modules
+node_modules
+
+# tailwind
+static/CACHE
+
+# output.css
+static/src/output.css
+
+# pycache
+*.pyc
