@@ -22,14 +22,14 @@
 
     {% include "_nav.html" %}
     
-    <div id="main-content" class="mt-4 transition-transform">
+    <div id="main-content" class="mt-4 transition-transform relative">
         {% block content %}
         {% endblock content %}
     </div>
 
     {% include "_sidebar.html" %}
 
-    <script src="{% static 'src/flowbite.min.js' %}"></script>
+    <script src="{% static 'vendor/flowbite.min.js' %}"></script>
 </body>
 
 </html>

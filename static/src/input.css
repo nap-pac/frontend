@@ -6,6 +6,16 @@
 
 /* Custom Classes Here */
 
+#current-device-container {
+    max-width: calc(100vw - 16rem);
+}
+
+@media screen and (max-width: 576px) {
+    #current-device-container {
+        max-width: calc(100vw);
+    }
+}
+
 /* STATUS INDICATOR */
 .status-success {
     box-shadow: 0 0 32px 1px rgba(56, 208, 117, 0.5);
@@ -75,10 +85,13 @@
 }
 
 .scroll-x {
-    overflow: hidden;
-}
-
-.scroll-x:hover {
     overflow-x: auto;
 }
 
+.scroll-x::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+.scroll-x:hover::-webkit-scrollbar-thumb {
+    background: #A1A1A1;
+}

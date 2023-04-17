@@ -76,5 +76,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 })
 
+// onclick, check if div with attribute drawer-backdrop is clicked
+document.addEventListener("click", function(e) {
+    if (e.target.hasAttribute("drawer-backdrop")) {
+        document.getElementById("main-content").classList.remove("translate-x-64")
+    }
+})
+
 updateNavPills("nav-alerts", { 'danger': '3', 'warning': '18' })
 updateNavPills("nav-logs", { 'danger': '1' })

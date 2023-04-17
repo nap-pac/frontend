@@ -9,3 +9,6 @@ static/src/output.css
 
 # pycache
 *.pyc
+
+# vendor
+static/vendor
