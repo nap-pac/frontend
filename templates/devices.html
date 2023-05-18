@@ -1,0 +1,161 @@
+<!-- templates/index.html -->
+{% extends "_base.html" %}
+
+{% load compress %}
+{% load static %}
+
+<!-- title is passed in from views.py -->
+{% block title %} {{ title }} {% endblock title %}
+
+{% block content %}
+
+<div class="mx-4">
+
+    <div id="acc-f" data-accordion="collapse" data-active-classes="text-white" data-inactive-classes="text-white">
+        <h2 id="acc-heading-f">
+            <button type="button"
+                class="flex items-center justify-between w-full py-5 font-medium text-left border-b border-dest-border text-gray-100"
+                data-accordion-target="#acc-body-f" aria-expanded="true"
+                aria-controls="acc-body-f">
+                <div class="flex items-center">
+                    <span class="urgent-stat inline-flex items-center justify-center w-4 h-4 p-4 ml-1 mr-2 text-xl font-medium rounded-lg bg-dest-danger text-white" id="dev-count-f">0</span>
+                    <h4 class="text-3xl text-white font-semibold">Flagged Devices</h4>
+                </div>
+                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </h2>
+        <div id="acc-body-f" class="hidden" aria-labelledby="acc-heading-f">
+            <div class="pt-6 border-b border-dest-border">
+                <p class="text-md text-white ml-4 mb-4 opacity-60" id="no-devices-f">No flagged devices</p>
+                <div id="f-devices-container" data-drag-scroll="true" class="flex scroll-x"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="acc-a" data-accordion="collapse" data-active-classes="text-white" data-inactive-classes="text-white">
+        <h2 id="acc-heading-a">
+            <button type="button"
+                class="flex items-center justify-between w-full py-5 font-medium text-left border-b border-dest-border text-gray-100"
+                data-accordion-target="#acc-body-a" aria-expanded="false"
+                aria-controls="acc-body-a">
+                <div class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-4 h-4 p-4 ml-1 mr-2 text-xl font-medium rounded-lg bg-dest-warning text-white" id="dev-count-a">0</span>
+                    <h4 class="text-3xl text-white font-semibold">All Devices</h4>
+                </div>
+                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </h2>
+        <div id="acc-body-a" class="hidden" aria-labelledby="acc-heading-a">
+            <div class="pt-6 border-b border-dest-border">
+                <p class="text-md text-white ml-4 mb-4 opacity-60" id="no-devices-a">No devices</p>
+                <div id="a-devices-container" data-drag-scroll="true" class="flex scroll-x"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="acc-w" data-accordion="collapse" data-active-classes="text-white" data-inactive-classes="text-white">
+        <h2 id="acc-heading-w">
+            <button type="button"
+                class="flex items-center justify-between w-full py-5 font-medium text-left border-b border-dest-border text-gray-100"
+                data-accordion-target="#acc-body-w" aria-expanded="false"
+                aria-controls="acc-body-w">
+                <div class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-4 h-4 p-4 ml-1 mr-2 text-xl font-medium rounded-lg bg-dest-success text-white" id="dev-count-w">0</span>
+                    <h4 class="text-3xl text-white font-semibold">Whitelisted Devices</h4>
+                </div>
+                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </h2>
+        <div id="acc-body-w" class="hidden" aria-labelledby="acc-heading-w">
+            <div class="pt-6 border-b border-dest-border">
+                <p class="text-md text-white ml-4 mb-4 opacity-60" id="no-devices-w">No whitelisted devices</p>
+                <div id="w-devices-container" data-drag-scroll="true" class="flex scroll-x"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- current device container -->
+    <div id="current-device-container" class="absolute top-0 left-0 hidden">
+        <div class="rounded-lg bg-dest-10 border-2 border-dest-form-border p-4 mx-4 mb-4 z-50 relative">
+            <div class="flex flex-col flex-start content-start p-4 pb-2">
+                <!-- top row -->
+                <div class="flex items-center flex-wrap">
+                    <div class="flex items-center mr-3">
+                        <!-- status indicator circle with drop shadow -->
+                        <div id="current-device-status"
+                            class="w-3 h-3 rounded-full mr-2 bg-dest-success status-success"></div>
+                        <!-- status text -->
+                        <p class="text-2xl font-semibold text-white ml-1" id="current-device-title"></p>
+                    </div>
+                    <!-- add or remove btn -->
+                    <button
+                        class="border-2 border-dest-danger text-white text-xl font-normal rounded-xl px-8 m-0 hover:bg-dest-danger hover:border-dest-danger hover:text-white focus:outline-none focus:ring-2 focus:ring-dest-danger focus:ring-opacity-75 leading-tight">
+                        <span class="opacity-80">Remove</span>
+                    </button>
+                </div>
+                <!-- tags -->
+                <p class="text-lg text-white opacity-80 font-semibold mt-2">Tags for this device</p>
+                <div class="flex items-center flex-wrap mt-2" id="current-device-tags"></div>
+                <!-- seen info -->
+                <div class="flex flex-start content-start mt-2 flex-wrap">
+                    <!-- last seen -->
+                    <div class="flex flex-col flex-start text-lg text-white mr-2">
+                        <p class="opacity-80 font-semibold">Last seen</p>
+                        <p class="opacity-60" id="current-device-last-seen-r">2s ago</p>
+                        <p class="opacity-60" id="current-device-last-seen-t">2023-01-01 12:00:06</p>
+                    </div>
+                    <!-- first seen -->
+                    <div class="flex flex-col flex-start text-lg text-white mr-2">
+                        <p class="opacity-80 font-semibold">First seen</p>
+                        <p class="opacity-60" id="current-device-first-seen-r">8s ago</p>
+                        <p class="opacity-60" id="current-device-first-seen-t">2023-01-01 12:00:00</p>
+                    </div>
+                    <!-- times seen -->
+                    <div class="flex flex-col flex-start text-lg text-white">
+                        <p class="opacity-80 font-semibold">Times seen</p>
+                        <p class="opacity-60" id="current-device-times-seen">17</p>
+                    </div>
+                </div>
+                <!-- location data -->
+                <div class="flex flex-col flex-start content-start mt-2">
+                    <p class="text-lg text-white opacity-80 font-semibold">Location data</p>
+                    <!-- map container -->
+                    <div class="h-72 w-full my-2">
+                        <!-- open street map embed -->
+                        <div class="h-72 w-full" id="current-device-map"></div>
+                    </div>
+                </div>
+                <!-- logs -->
+                <div class="flex flex-col flex-start content-start">
+                    <p class="text-lg text-white opacity-80 font-semibold">Logs</p>
+                    <div class="flex flex-col flex-start content-start mt-2" id="current-device-logs"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- card script -->
+<script src="{% static 'src/card.js' %}"></script>
+<!-- maps -->
+<script src="{% static 'vendor/leaflet.min.js' %}" defer></script>
+<script src="{% static 'src/map.js' %}" defer></script>
+<!-- css -->
+<link rel="stylesheet" defer href="{% static 'vendor/leaflet.css' %}">
+{% endblock content %}

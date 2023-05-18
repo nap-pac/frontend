@@ -1,0 +1,578 @@
+<!-- templates/index.html -->
+{% extends "_base.html" %}
+
+{% load compress %}
+{% load static %}
+
+<!-- title is passed in from views.py -->
+{% block title %} {{ title }} {% endblock title %}
+
+{% block content %}
+
+<div class="mx-4">
+
+    <!-- alerts header -->
+    <div class="flex flex-wrap items-center mb-3">
+        <h1 class="text-white text-3xl font-semibold mr-3 mb-3"><span id="total-alerts">543</span> Alerts</h1>
+        <!-- badges for critical, warning and info -->
+        <span class="inline-flex items-center justify-center h-3 p-3 mr-3 mb-3 text-xl font-medium rounded-lg bg-dest-danger text-white"><span id="total-critical">4</span><span class="hidden md:block ml-1">Critical</span></span>
+        <span class="inline-flex items-center justify-center h-3 p-3 mr-3 mb-3 text-xl font-medium rounded-lg bg-dest-warning text-white"><span id="total-warning">392</span><span class="hidden md:block ml-1">Warning</span></span>
+        <span class="inline-flex items-center justify-center h-3 p-3 mr-3 mb-3 text-xl font-medium rounded-lg bg-dest-info text-white"><span id="total-info">147</span><span class="hidden md:block ml-1">Info</span></span>
+        <!-- last updated reload -->
+        <div class="opacity-80 flex items-center mb-3">
+            <img src="{% static 'assets/svg/reload.svg' %}" class="w-6 h-6 cursor-pointer mr-2" id="reload-alerts" alt="Reload Alerts">
+            <span class="text-xl text-white">Last Updated: <span id="alerts-last-updated">12:28 pm (now)</span></span>
+        </div>
+    </div>
+
+    <div class="relative shadow-md sm:rounded-lg">
+        <div class="flex flex-col items-center justify-between space-y-3 md:flex-row md:space-y-0 md:space-x-4 mb-3">
+            <div class="w-full md:w-1/2">
+            <form class="flex items-center">
+                <label for="simple-search" class="sr-only">Search</label>
+                <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input type="text" id="simple-search" class="block w-full p-2 pl-10 text-sm border border-dest-border border-2 rounded-lg bg-dest-form placeholder-gray-400 text-white focus:ring-0" placeholder="Search" required="">
+                </div>
+            </form>
+            </div>
+
+            <div class="flex flex-col items-stretch justify-end flex-shrink-0 w-full space-y-2 md:w-auto md:flex-row md:space-y-0 md:items-center md:space-x-3">
+                <button id="timeFrameDropdownButton" data-dropdown-toggle="timeFrameDropdown" class="flex items-center justify-center w-full min-w-fit px-4 py-2 text-sm font-medium text-white bg-dest-form rounded-lg border border-2 border-dest-border" type="button">
+                    <img class="w-4 h-4 mr-2 invert opacity-80" src="{% static 'assets/svg/calendar.svg' %}" alt="calendar">
+                    <span id="time-frame" class="opacity-80">Past 2 Hours</span>
+                    <img class="-mr-1 ml-1.5 w-5 h-5 invert opacity-80" src="{% static 'assets/svg/arrow.svg' %}" alt="arrow">
+                </button>
+                <!-- Dropdown menu -->
+                <div id="timeFrameDropdown" class="z-10 hidden w-48 p-3 rounded-lg shadow bg-dest-form border-dest-border border border-2">
+                <h6 class="mb-3 text-sm font-medium text-white">Time Frame</h6>
+                    <ul class="space-y-3 text-sm text-gray-200" aria-labelledby="dropdownRadioButton">
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-1" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-1" class="ml-2 text-sm font-medium text-gray-200">Past 15 Minutes</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-2" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-2" class="ml-2 text-sm font-medium text-gray-200">Past 30 Minutes</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-3" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-3" class="ml-2 text-sm font-medium text-gray-200">Past Hour</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input checked id="time-frame-4" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-4" class="ml-2 text-sm font-medium text-gray-200">Past 2 Hours</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-5" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-5" class="ml-2 text-sm font-medium text-gray-200">Past 4 Hours</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-6" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-6" class="ml-2 text-sm font-medium text-gray-200">Past 8 Hours</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-7" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-7" class="ml-2 text-sm font-medium text-gray-200">Past 24 Hours</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-8" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-8" class="ml-2 text-sm font-medium text-gray-200">Past 3 Days</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-9" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-9" class="ml-2 text-sm font-medium text-gray-200">Past 7 Days</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="time-frame-10" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="time-frame-10" class="ml-2 text-sm font-medium text-gray-200">Anytime</label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <button id="settingsDropdownButton" data-dropdown-toggle="settingsDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-dest-form rounded-lg border border-2 border-dest-border" type="button">
+                    <img class="w-4 h-4 mr-2 invert opacity-80" src="{% static 'assets/svg/settings.svg' %}" alt="settings">
+                    <span id="time-frame" class="opacity-80">Settings</span>
+                </button>
+                <!-- Dropdown menu -->
+                <div id="settingsDropdown" class="z-10 hidden w-48 p-3 rounded-lg shadow bg-dest-form border-dest-border border border-2">
+                <h6 class="mb-3 text-sm font-medium text-gray-200">Fields</h6>
+                <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
+                    <li class="flex items-center">
+                        <input id="field-check-level" type="checkbox" value="" checked
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-level" class="ml-2 text-sm font-medium text-gray-200">
+                            Level
+                        </label>
+                    </li>
+                    <li class="flex items-center">
+                        <input id="field-check-alert-triggered" type="checkbox" value="" checked
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-alert-triggered" class="ml-2 text-sm font-medium text-gray-200">
+                            Triggered At
+                        </label>
+                    </li>
+                    <li class="flex items-center">
+                        <input id="field-check-type" type="checkbox" value="" checked
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-type" class="ml-2 text-sm font-medium text-gray-200">
+                            Type
+                        </label>
+                    </li>
+                    <li class="flex items-center">
+                        <input id="field-check-name" type="checkbox" value="" checked
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-name" class="ml-2 text-sm font-medium text-gray-200">
+                            Name
+                        </label>
+                    </li>
+                    <li class="flex items-center">
+                        <input id="field-check-address" type="checkbox" value="" checked
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-" class="ml-2 text-sm font-medium text-gray-200">
+                            Address
+                        </label>
+                    </li>
+                    <li class="flex items-center">
+                        <input id="field-check-first-seen" type="checkbox" value="" checked
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-first-seen" class="ml-2 text-sm font-medium text-gray-200">
+                            First Seen
+                        </label>
+                    </li>
+                    <li class="flex items-center">
+                        <input id="field-check-last-seen" type="checkbox" value="" checked
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-last-seen" class="ml-2 text-sm font-medium text-gray-200">
+                            Last Seen
+                        </label>
+                    </li>
+                    <li class="flex items-center">
+                        <input id="field-check-tags" type="checkbox" value=""
+                            class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0" />
+                        <label for="field-check-tags" class="ml-2 text-sm font-medium text-gray-200">
+                            Tags
+                        </label>
+                    </li>
+                </ul>
+                <!-- button to update -->
+                <button id="update-fields" class="flex items-center justify-center w-full px-4 py-1 mt-3 text-sm font-medium text-white bg-blue-600 rounded-lg border border-2 border-dest-border" type="button">
+                    <span id="time-frame" class="opacity-80">Update</span>
+                </button>
+                </div>
+            </div>
+        </div>
+        <div data-drag-scroll="true" class="scroll-x">
+            <table class="w-full text-sm text-left text-gray-400">
+                <thead class="text-xs uppercase bg-dest-form border border-2 border-dest-border rounded-lg">
+                    <tr>
+                        <th scope="col" class="p-4">
+                            <div class="flex items-center">
+                                <input id="checkbox-all" type="checkbox" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-all" class="sr-only">checkbox</label>
+                            </div>
+                        </th>
+                        <th scope="col" class="px-4 py-3">Level</th>
+                        <th scope="col" class="px-4 py-3">Triggered At</th>
+                        <th scope="col" class="px-4 py-3">Type</th>
+                        <th scope="col" class="px-4 py-3">Name</th>
+                        <th scope="col" class="px-4 py-3">Address</th>
+                        <th scope="col" class="px-4 py-3">First Seen</th>
+                        <th scope="col" class="px-4 py-3">Last Seen</th>
+                        <!-- <th scope="col" class="px-4 py-3">Tags</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-danger text-white">Critical</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">Probe Request</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-danger text-white">Critical</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">Wi-Fi Device</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-danger text-white">Critical</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">Custom Trigger Name</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-danger text-white">Critical</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">Probe Request</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-warning text-white">Warning</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">Custom Trigger 1</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-info text-white">Info</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">X Manufacturer Seen</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-info text-white">Info</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">X Manufacturer Seen</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-info text-white">Info</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">X Manufacturer Seen</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-info text-white">Info</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">X Manufacturer Seen</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                    <tr class="border border-2 border-dest-border">
+                        <td class="w-4 px-4 py-3">
+                            <div class="flex items-center">
+                                <input id="checkbox-table-search-1" type="checkbox" onclick="event.stopPropagation()" class="w-4 h-4 bg-dest-0 border-gray-500 border-2 rounded text-blue-600 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                            </div>
+                        </td>
+                        <td class="ps-4 py-2">
+                            <span class="inline-flex items-center justify-center h-3 p-3 -ml-3 text-sm font-medium rounded-lg bg-dest-info text-white">Info</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-alert-time="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span class="text-gray-200">X Manufacturer Seen</span>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">Suspicous Device</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-device-link="">00:00:00:00:00:00</span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-first-seen="">11:17 am <span class="text-gray-400">- 1h 9m</span></span>
+                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-200 whitespace-nowrap">
+                            <span data-last-seen="">12:26 pm <span class="text-gray-400">- 2m</span></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <nav class="flex flex-col items-start justify-between space-y-3 my-3 md:flex-row md:items-center md:space-y-0" aria-label="Table navigation">
+            <div class="flex flex-wrap items-start">
+                <button id="itemCountDropdownButton" data-dropdown-toggle="itemCountDropdown" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-dest-form rounded-lg border border-2 border-dest-border mr-3 mb-3" type="button">
+                    <img class="w-4 h-4 mr-2 invert opacity-80" src="{% static 'assets/svg/stack.svg' %}" alt="calendar">
+                    <span id="time-frame" class="opacity-80">10 Items Per Page</span>
+                    <img class="w-4 h-4 ml-2 invert opacity-80" src="{% static 'assets/svg/arrow.svg' %}" alt="arrow">
+                </button>
+                <!-- Dropdown menu -->
+                <div id="itemCountDropdown" class="z-10 hidden w-48 p-3 rounded-lg shadow bg-dest-form border-dest-border border border-2 mb-3">
+                <h6 class="mb-3 text-sm font-medium text-white">Time Frame</h6>
+                    <ul class="space-y-3 text-sm text-gray-200" aria-labelledby="dropdownRadioButton">
+                        <li>
+                            <div class="flex items-center">
+                                <input id="items-count-1" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="items-count-1" class="ml-2 text-sm font-medium text-gray-200">10 Items Per Page</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="items-count-2" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="items-count-2" class="ml-2 text-sm font-medium text-gray-200">25 Items Per Page</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input id="items-count-3" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="items-count-3" class="ml-2 text-sm font-medium text-gray-200">50 Items Per Page</label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <input checked id="items-count-4" type="radio" value="" name="time-frame" class="w-4 h-4 text-blue-600 bg-dest-0 border-2 focus:outline-0 focus:shadow-none focus:ring-offset-0 focus:ring-0">
+                                <label for="items-count-4" class="ml-2 text-sm font-medium text-gray-200">100 Items Per Page</label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <ul class="inline-flex items-stretch -space-x-px">
+                    <li>
+                        <a href="#" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 rounded-l-lg text-gray-200 border border-2 border-dest-border bg-dest-form">
+                            <span class="sr-only">Previous</span>
+                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" aria-current="page" class="flex items-center justify-center px-3 py-2 text-sm h-full leading-tight text-gray-200 border border-2 border-dest-border bg-dest-border">1</a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center justify-center px-3 py-2 text-sm h-full leading-tight text-gray-200 border border-2 border-dest-border bg-dest-form">2</a>
+                    </li>
+                    <li>
+                        <a href="#" class="z-10 flex items-center justify-center px-3 py-2 text-sm h-full leading-tight text-gray-200 border border-2 border-dest-border bg-dest-form">3</a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center justify-center px-3 py-2 text-sm h-full leading-tight text-gray-200 border border-2 border-dest-border bg-dest-form">...</a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center justify-center px-3 py-2 text-sm h-full leading-tight text-gray-200 border border-2 border-dest-border bg-dest-form">100</a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center justify-center h-full py-1.5 px-3 leading-tight rounded-r-lg text-gray-200 border border-2 border-dest-border bg-dest-form">
+                            <span class="sr-only">Next</span>
+                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <span class="text-sm font-normal text-gray-400">
+                Showing
+                <span class="font-semibold text-white">1-10</span>
+                of
+                <span class="font-semibold text-white">543</span>
+            </span>
+        </nav>
+    </div>
+
+    
+    
+
+</div>
+
+{% endblock content %}

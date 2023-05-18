@@ -27,6 +27,11 @@ curl https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/images/marker-icon-2x.
 curl https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/images/marker-shadow.png -o static/vendor/images/marker-shadow.png
 ```
 
+## For testing web on windows
+```powershell
+while ($true) {python manage.py runcrons;start-sleep 60}
+```
+
 ## Notes
 https://tailwindcss.com/docs/customizing-colors#using-custom-colors
 https://flowbite.com/docs/components/sidebar/#off-canvas-sidebar

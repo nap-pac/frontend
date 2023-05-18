@@ -66,7 +66,7 @@ document.getElementById("drawer-trigger-btn").onclick = function() {
 
 // onload check for mobile view
 document.addEventListener("DOMContentLoaded", function() {
-    if (window.innerWidth < 576) {
+    if (window.innerWidth < 800) {
         document.getElementById("drawer-navigation").classList.add("-translate-x-64")
     } else {
         // hide close menu option
@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // add constant margin 64 
         document.getElementById("main-content").classList.add("ml-64")
     }
+    registerDragScroll();
 })
 
 // onclick, check if div with attribute drawer-backdrop is clicked
@@ -85,3 +86,56 @@ document.addEventListener("click", function(e) {
 
 updateNavPills("nav-alerts", { 'danger': '3', 'warning': '18' })
 updateNavPills("nav-logs", { 'danger': '1' })
+
+
+// dragScroll class
+class DragScroll {
+    constructor(elem) {
+        this.elem = elem;
+        this.pos = { top: 0, left: 0, x: 0, y: 0 };
+    }
+
+    mouseDown = (e) => {
+        this.elem.style.cursor = "grabbing";
+        this.elem.style.userSelect = "none";
+        this.pos = {
+            left: this.elem.scrollLeft,
+            top: this.elem.scrollTop,
+            x: e.clientX,
+            y: e.clientY,
+        };
+        document.addEventListener("mousemove", this.mouseMove);
+        document.addEventListener("mouseup", this.mouseUp);
+    };
+
+    mouseMove = (e) => {
+        const dx = e.clientX - this.pos.x;
+        const dy = e.clientY - this.pos.y;
+        this.elem.scrollTop = this.pos.top - dy;
+        this.elem.scrollLeft = this.pos.left - dx;
+    };
+
+    mouseUp = () => {
+        this.elem.style.cursor = "grab";
+        this.elem.style.removeProperty("user-select");
+        document.removeEventListener("mousemove", this.mouseMove);
+        document.removeEventListener("mouseup", this.mouseUp);
+    };
+
+    register = () => {
+        this.elem.addEventListener("mousedown", this.mouseDown);
+    };
+}
+
+// function to register all drag scroll elements
+const registerDragScroll = () => {
+    // get all drag scroll elements
+    let dragScrollElements = document.querySelectorAll("[data-drag-scroll]");
+    // loop through elements
+    dragScrollElements.forEach((elem) => {
+        // create drag scroll object
+        let dragScroll = new DragScroll(elem);
+        // register
+        dragScroll.register();
+    });
+};

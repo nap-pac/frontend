@@ -22,8 +22,30 @@ def index(request):
     
     template = loader.get_template('index.html')
     context = {
-        'title': 'Home',
-        'message': 'Hello World',
+        'title': 'Dashboard',
+        'svgpath': '',
+    }
+    return HttpResponse(template.render(context, request))
+
+def devices(request):
+    if not check_auth(request):
+        return redirect('login')
+    
+    template = loader.get_template('devices.html')
+    context = {
+        'title': 'Devices',
+        'svgpath': 'assets/svg/devices.svg',
+    }
+    return HttpResponse(template.render(context, request))
+
+def alerts(request):
+    if not check_auth(request):
+        return redirect('login')
+    
+    template = loader.get_template('alerts.html')
+    context = {
+        'title': 'Alerts',
+        'svgpath': 'assets/svg/alerts.svg',
     }
     return HttpResponse(template.render(context, request))
 
@@ -31,6 +53,5 @@ def login(request):
     template = loader.get_template('login.html')
     context = {
         'title': 'Login',
-        'message': 'Hello World',
     }
     return HttpResponse(template.render(context, request))
