@@ -63,8 +63,12 @@ function replaceMarkers() {
 
         // set center to first marker
         map.panTo([newMarkers[0][2], newMarkers[0][1]]);
-        map.setZoom(9);
+        map.setZoom(18);
     }
+
+    // set #current-device-location-data-points
+    let currentDeviceLocationDataPoints = document.getElementById('current-device-location-data-points');
+    currentDeviceLocationDataPoints.innerText = `(${newMarkers.length})`;
 }
 
 // https://medium.com/@nargessmi87/how-to-customize-the-openstreetmap-marker-icon-and-binding-popup-ab2254bddec2

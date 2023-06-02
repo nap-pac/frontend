@@ -328,8 +328,11 @@ const fetchDevices = async () => {
         .then((res) => res.json())
         .then((data) => {
             // set devices
-            window.devices = data.data;
-            console.log("Fetched " + data.data.length + " devices");
+            // only get first 100
+            data = data.data
+            // data = data.slice(0, 100);
+            window.devices = data;
+            console.log("Fetched " + data.length + " devices");
         });
 };
 
@@ -456,6 +459,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // register drag scroll
     await fetchDevices()
     await getLists();
+    startTime = window.performance.now();
     for (let ii = 0; ii<window.devices.length; ii++) {
         let device = window.devices[ii];
         let dev = {
@@ -491,6 +495,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
     console.log(window.lists)
+    // time taken
+    endTime = window.performance.now();
+    console.log("Page load took " + (endTime - startTime) + "ms");
 });
 
 const setPredefined = () => {

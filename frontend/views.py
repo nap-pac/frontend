@@ -38,6 +38,17 @@ def devices(request):
     }
     return HttpResponse(template.render(context, request))
 
+def networks(request):
+    if not check_auth(request):
+        return redirect('login')
+    
+    template = loader.get_template('networks.html')
+    context = {
+        'title': 'Networks',
+        'svgpath': 'assets/svg/networks.svg',
+    }
+    return HttpResponse(template.render(context, request))
+
 def alerts(request):
     if not check_auth(request):
         return redirect('login')

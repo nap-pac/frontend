@@ -22,6 +22,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('devices/', views.devices, name='devices'),
+    path('networks/', views.networks, name='networks'),
     path('alerts/', views.alerts, name='alerts'),
     path('login/', views.login, name='login'),
     # views

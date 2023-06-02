@@ -174,7 +174,12 @@ def set_device_name(request, id):
 def get_devices(request):
     if not check_auth(request):
         return JsonResponse({'error': 'Not authenticated'}, status=403)
-    result = run_sql_wrapper(request, "SELECT * FROM devices ORDER BY last_seen DESC")
+    result = run_sql_wrapper(request, "SELECT * FROM devices ORDER BY last_seen DESC LIMIT 250")
+    # result = run_sql_wrapper(request, "SELECT * FROM devices ORDER BY last_seen DESC")
+    # order by times_seen and if last_seen in last 5 minutes
+    # result = run_sql_wrapper(request, "SELECT * FROM devices WHERE last_seen > " + str(int(time.time()) - 300) + " ORDER BY times_seen DESC")
+    # print number
+    print('[INFO] ' + str(len(result)) + ' devices found')
     return JsonResponse({'data': result})
 
 def get_device(request, id):

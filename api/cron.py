@@ -35,7 +35,6 @@ class MyCronJob(CronJobBase):
 # - add alert to the front end
 # - add alert to the database (automatic)
 
-# write the schema for control.db with the above in mind.
 # CREATE TABLE alerts (id INTEGER PRIMARY KEY, device_id TEXT, ssid_id TEXT, alert_time INTEGER, acknowledged INTEGER, cleared INTEGER);
 # CREATE TABLE triggers (id INTEGER PRIMARY KEY, alert_id INTEGER, type INTEGER, value INTEGER);
 # CREATE TABLE actions (id INTEGER PRIMARY KEY, alert_id INTEGER, type INTEGER, value TEXT);
