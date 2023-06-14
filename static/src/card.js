@@ -454,47 +454,81 @@ const getLocationForDevice = async (mac) => {
     });
 }
 
+const getMapData = async (name = "all") => {
+    // post
+    path = "/api/locations/";
+    if (name != "all") {
+        path = "/api/locations/device/'" + name + "/";
+    }
+    returnData = {};
+    await fetch(path, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        console.log("Got map data with " + data.data.length + " data points");
+        returnData = data.data;
+    });
+    return returnData;
+}
+
 // page ready
 document.addEventListener("DOMContentLoaded", async () => {
-    // register drag scroll
-    await fetchDevices()
-    await getLists();
+    // determine what page based on path
+    let path = window.location.pathname;
+    console.log("Path: " + path);
+    // for /devices/
     startTime = window.performance.now();
-    for (let ii = 0; ii<window.devices.length; ii++) {
-        let device = window.devices[ii];
-        let dev = {
-            "mac": device[0],
-            "name": device[1],
-            "firstSeen": device[2],
-            "lastSeen": device[3],
-            "timesSeen": device[4],
-            "flagged": false, // will sort out later
-            "whitelist": false, // will sort out later
-        }
-        // check if in whitelist
-        for (let jj = 0; jj<window.lists.whitelist.length; jj++) {
-            if (window.lists.whitelist[jj][0] == dev.mac) {
-                dev.whitelist = true;
-                break;
+    if (path == "/devices/") {
+        // register drag scroll
+        await fetchDevices()
+        await getLists();
+        for (let ii = 0; ii<window.devices.length; ii++) {
+            let device = window.devices[ii];
+            let dev = {
+                "mac": device[0],
+                "name": device[1],
+                "firstSeen": device[2],
+                "lastSeen": device[3],
+                "timesSeen": device[4],
+                "flagged": false, // will sort out later
+                "whitelist": false, // will sort out later
+            }
+            // check if in whitelist
+            for (let jj = 0; jj<window.lists.whitelist.length; jj++) {
+                if (window.lists.whitelist[jj][0] == dev.mac) {
+                    dev.whitelist = true;
+                    break;
+                }
+            }
+            // check if flagged
+            for (let jj = 0; jj<window.lists.flagged.length; jj++) {
+                if (window.lists.flagged[jj][0] == dev.mac) {
+                    dev.flagged = true;
+                    break;
+                }
+            }
+            window.devices[ii] = dev;
+            if (dev.whitelist) {
+                addCard("w-devices-container", dev.name, dev.mac, dev.whitelist ? "success" : dev.flagged ? "danger" : "warning", {"lastSeen": dev.lastSeen, "firstSeen": dev.firstSeen, "timesSeen": dev.timesSeen})
+            } else if (dev.flagged) {
+                addCard("f-devices-container", dev.name, dev.mac, dev.whitelist ? "success" : dev.flagged ? "danger" : "warning", {"lastSeen": dev.lastSeen, "firstSeen": dev.firstSeen, "timesSeen": dev.timesSeen}, true)
+            } else {
+                addCard("a-devices-container", dev.name, dev.mac, dev.whitelist ? "success" : dev.flagged ? "danger" : "warning", {"lastSeen": dev.lastSeen, "firstSeen": dev.firstSeen, "timesSeen": dev.timesSeen})
             }
         }
-        // check if flagged
-        for (let jj = 0; jj<window.lists.flagged.length; jj++) {
-            if (window.lists.flagged[jj][0] == dev.mac) {
-                dev.flagged = true;
-                break;
-            }
-        }
-        window.devices[ii] = dev;
-        if (dev.whitelist) {
-            addCard("w-devices-container", dev.name, dev.mac, dev.whitelist ? "success" : dev.flagged ? "danger" : "warning", {"lastSeen": dev.lastSeen, "firstSeen": dev.firstSeen, "timesSeen": dev.timesSeen})
-        } else if (dev.flagged) {
-            addCard("f-devices-container", dev.name, dev.mac, dev.whitelist ? "success" : dev.flagged ? "danger" : "warning", {"lastSeen": dev.lastSeen, "firstSeen": dev.firstSeen, "timesSeen": dev.timesSeen}, true)
-        } else {
-            addCard("a-devices-container", dev.name, dev.mac, dev.whitelist ? "success" : dev.flagged ? "danger" : "warning", {"lastSeen": dev.lastSeen, "firstSeen": dev.firstSeen, "timesSeen": dev.timesSeen})
-        }
+        console.log(window.lists)
+    } else if (path == "/map/") {
+        console.log("Map page");
+        // get map data
+        mapData = await getMapData();
+        console.log(mapData);
+        await loadMapPage(mapData);
     }
-    console.log(window.lists)
     // time taken
     endTime = window.performance.now();
     console.log("Page load took " + (endTime - startTime) + "ms");

@@ -24,6 +24,7 @@ urlpatterns = [
     path('devices/', views.devices, name='devices'),
     path('networks/', views.networks, name='networks'),
     path('alerts/', views.alerts, name='alerts'),
+    path('map/', views.map, name='map'),
     path('login/', views.login, name='login'),
     # views
     path('hello/', views.hello_world, name='hello'),

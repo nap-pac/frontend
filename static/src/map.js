@@ -73,3 +73,73 @@ function replaceMarkers() {
 
 // https://medium.com/@nargessmi87/how-to-customize-the-openstreetmap-marker-icon-and-binding-popup-ab2254bddec2
 
+const hashCode = s => s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)
+
+async function loadMapPage(mapData = []) {
+    let dataPoints = document.getElementById('full-location-data-points');
+    // let mapEl = document.getElementById('full-map');
+    dataPoints.innerText = `(${mapData.length})`;
+
+    // let center be average of all points
+    let centerLat = 0;
+    let centerLng = 0;
+    let groupPoints = {};
+    for (let i = 0; i < mapData.length; i++) {
+        centerLat += mapData[i][2];
+        centerLng += mapData[i][1];
+        // also group points by name
+        if (groupPoints[mapData[i][0]] == undefined) {
+            groupPoints[mapData[i][0]] = [];
+        }
+        groupPoints[mapData[i][0]].push(mapData[i]);
+    }
+    centerLat /= mapData.length;
+    centerLng /= mapData.length;
+
+    // config
+    let mapOptions = {
+        center:[centerLat, centerLng],
+        zoom: 18
+    }
+    let map = new L.map('full-map' , mapOptions);
+
+    let layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    map.addLayer(layer);
+
+    // let marker = new L.Marker([-32.007, 115.895]);
+    // marker.addTo(map);
+
+    // add a poly line for each group
+    let groupKeys = Object.keys(groupPoints);
+    for (let i = 0; i < groupKeys.length; i++) {
+        // color based on name
+        let groupKey = groupKeys[i];
+        color = '#'+(hashCode(groupKey) & 0x00FFFFFF).toString(16).toUpperCase();
+        let group = groupPoints[groupKey];
+        let latlngs = [];
+        for (let j = 0; j < group.length; j++) {
+            // add random offset to latlngs
+            latlngs.push([group[j][2], group[j][1]]);
+            // also draw colored circle
+            let circle = L.circle([group[j][2], group[j][1]], {
+                color: color,
+                fillColor: color,
+                opacity: 1,
+                radius: 1
+            }).addTo(map);
+        }
+        let polyline = L.polyline(latlngs, {
+            color: color,
+            weight: 4,
+            opacity: 0.5,
+            smoothFactor: 1
+        }).addTo(map);
+        // add a popup
+        polyline.bindPopup(groupKey);
+    }
+
+    map.on('click', (event)=> {
+        // L.marker([event.latlng.lat , event.latlng.lng]).addTo(map);
+        console.log(event.latlng.lat , event.latlng.lng);
+    })
+}

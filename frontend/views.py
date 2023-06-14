@@ -60,6 +60,17 @@ def alerts(request):
     }
     return HttpResponse(template.render(context, request))
 
+def map(request):
+    if not check_auth(request):
+        return redirect('login')
+    
+    template = loader.get_template('map.html')
+    context = {
+        'title': 'Map',
+        'svgpath': 'assets/svg/map.svg',
+    }
+    return HttpResponse(template.render(context, request))
+
 def login(request):
     template = loader.get_template('login.html')
     context = {
