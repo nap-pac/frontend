@@ -107,7 +107,7 @@ async function loadMapPage(mapData = []) {
   // config
   let mapOptions = {
     center: [centerLat, centerLng],
-    zoom: 18,
+    zoom: 15,
   };
   window.map = new L.map("full-map", mapOptions);
 
