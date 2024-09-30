@@ -71,16 +71,20 @@ def map(request):
     }
     return HttpResponse(template.render(context, request))
 
+def mlgraph(request):
+    if not check_auth(request):
+        return redirect('login')
+    
+    template = loader.get_template('graph.html')
+    context = {
+        'title': 'Map',
+        'svgpath': 'assets/svg/graph.svg',
+    }
+    return HttpResponse(template.render(context, request))
+
 def login(request):
     template = loader.get_template('login.html')
     context = {
         'title': 'Login',
     }
     return HttpResponse(template.render(context, request))
-
-def mlgraph(request):
-    template = loader.get_template('graph.html')
-    context = {
-        'title': 'Graph'
-        'svgpath': 'assests/svg/graph.svg',
-    }
