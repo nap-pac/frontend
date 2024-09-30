@@ -124,7 +124,16 @@ async function loadMapPage(mapData = []) {
   for (let i = 0; i < groupKeys.length; i++) {
     // color based on name
     let groupKey = groupKeys[i];
-    color = "#" + (hashCode(groupKey) & 0x00ffffff).toString(16).toUpperCase();
+    if (groupKey == "own") {
+      color = "FF0000";
+    } else {
+      color = (hashCode(groupKey) & 0x00ffffff).toString(16).toUpperCase();
+    }
+    // extend color to 6 digits
+    while (color.length < 6) {
+      color = "0" + color;
+    }
+    color = "#" + color;
     let group = groupPoints[groupKey];
     let latlngs = [];
     for (let j = 0; j < group.length; j++) {
@@ -135,13 +144,14 @@ async function loadMapPage(mapData = []) {
         color: color,
         fillColor: color,
         opacity: 1,
-        radius: 1,
+        radius: 3,
       }).addTo(map);
     }
+    console.log(latlngs, color, groupKey);
     let polyline = L.polyline(latlngs, {
       color: color,
-      weight: 4,
-      opacity: 0.5,
+      weight: 5,
+      opacity: 0.7,
       smoothFactor: 1,
     }).addTo(map);
     // add a popup
@@ -157,11 +167,15 @@ async function loadMapPage(mapData = []) {
 }
 
 function getCoordinates(address) {
-  const url = `https://nominatim.openstreetmap.org/search/${encodeURIComponent(
-    address
-  )}?format=json`;
+  const url = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(address)}&format=jsonv2`;
+  // const url = `https://nominatim.openstreetmap.org/reverse.php?format=jsonv2&lat=${address.split(" ")[0]}&lon=${address.split(" ")[1]}`;
+  // https://nominatim.openstreetmap.org/ui/reverse.html?lat=-32.007129652163464&lon=115.89592818576988&zoom=15
+  // -32.007129652163464 115.89592818576988 - 314 CURTIN
 
-  return fetch(url)
+  return fetch(url, {
+    // ignore cors
+    mode: "cors",
+  })
     .then((response) => response.json())
     .then((data) => {
         console.log(data);

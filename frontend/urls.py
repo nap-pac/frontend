@@ -29,6 +29,7 @@ urlpatterns = [
     # views
     path('hello/', views.hello_world, name='hello'),
     path('admin/', admin.site.urls),
+    path('mlgraph/', views.mlgraph, name='graph'),
     path('api/', include('api.urls')),
 
 ]

@@ -77,3 +77,10 @@ def login(request):
         'title': 'Login',
     }
     return HttpResponse(template.render(context, request))
+
+def mlgraph(request):
+    template = loader.get_template('graph.html')
+    context = {
+        'title': 'Graph'
+        'svgpath': 'assests/svg/graph.svg',
+    }

@@ -1,0 +1,22 @@
+<!-- templates/index.html -->
+{% extends "_base.html" %}
+
+{% load compress %}
+{% load static %}
+
+<!-- title is passed in from views.py -->
+{% block title %} {{ title }} {% endblock title %}
+
+{% block content %}
+
+<div class="mx-4">
+
+    <h1 class="text-3xl text-white font-semibold">Matplotlib Graph</h1>
+    
+    <!-- Display the dynamically generated plot image -->
+    <div class="py-4">
+        <img src="/plot.png" alt="Matplotlib Graph" class="w-full h-auto border border-gray-400 rounded-lg">
+    </div>
+    
+</div>
+{% endblock content %}

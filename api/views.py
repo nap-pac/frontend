@@ -9,7 +9,7 @@ import os
 import json
 import time
 
-def connectToDBFile(file, path='..\\sample-data\\'):
+def connectToDBFile(file, path='/home/dest/sample-data/'):
     newConnection = settings.DATABASES['default'].copy()
     newConnection['id'] = file.replace('.db', '')
     newConnection['ENGINE'] = 'django.db.backends.sqlite3'
@@ -17,7 +17,7 @@ def connectToDBFile(file, path='..\\sample-data\\'):
     connections.databases[newConnection['id']] = newConnection
     return newConnection
 
-def getLatestDBFile(path='..\\sample-data\\'):
+def getLatestDBFile(path='/home/dest/sample-data/'):
     latest_file = ''
     list_of_files = glob.glob(path + '*dest*.db')
     if len(list_of_files) != 0:
@@ -27,7 +27,7 @@ def getLatestDBFile(path='..\\sample-data\\'):
         print('Latest file: ' + latest_file)
     return latest_file
 
-def setupControlDB(path='..\\sample-data\\'):
+def setupControlDB(path='/home/dest/sample-data/'):
     newConnection = settings.DATABASES['default'].copy()
     newConnection['id'] = 'control'
     newConnection['ENGINE'] = 'django.db.backends.sqlite3'
@@ -206,7 +206,46 @@ def get_ssid(request, id):
 def get_locations(request):
     if not check_auth(request):
         return JsonResponse({'error': 'Not authenticated'}, status=403)
-    result = run_sql_wrapper(request, "SELECT * FROM locations LIMIT 1000")
+    # result = run_sql_wrapper(request, "SELECT * FROM locations LIMIT 1000")
+    # only get results if mac seen in multiple locations/records
+    # result = run_sql_wrapper(request, "SELECT * FROM locations WHERE mac IN (SELECT mac FROM locations GROUP BY mac HAVING COUNT(*) > 20 ORDER BY COUNT(*) DESC)")
+    # change above to limit output to top 10 most frequent devices but allow all locations
+
+    # get first and last timestamp
+    # result = run_sql_wrapper(request, "SELECT * FROM locations WHERE timestamp IN (SELECT MIN(timestamp) FROM locations UNION SELECT MAX(timestamp) FROM locations)")
+    # there can be multiple records with the same timestamp, so only get one of each, not all 
+    result = run_sql_wrapper(request, "SELECT MIN(timestamp) FROM locations UNION SELECT MAX(timestamp) FROM locations")
+    print(result)
+    # if result is not [(None),]
+    if result == [(None),]:
+        return JsonResponse({'error': 'No locations found'}, status=400)
+    
+    print(f"Start: {result[0][0]} End: {result[1][0]}")
+    # startOffset = 300
+    # endOffset = 300
+    startOffset = 0
+    endOffset = 0
+    # group same lat, lon, mac together so no duplicates
+    result = run_sql_wrapper(request, "SELECT * FROM locations WHERE timestamp BETWEEN " + str(result[0][0] + startOffset) + " AND " + str(result[1][0] - endOffset) + " GROUP BY mac, lat, lon")
+
+    # loop through, O(N) time. only keep duplicates
+    # example data A A B C D D D E F
+    # result is A A D D D
+    finalResult = []
+    for i in range(1, len(result) - 1):
+        # check if this and prev is same or this and next is same
+        # if one of them is same, keep it
+        if result[i][0] == result[i - 1][0] or result[i][0] == result[i + 1][0]:
+            finalResult.append(result[i])
+
+    result = finalResult
+    # print number
+    print('[INFO] ' + str(len(result)) + ' locations found')
+
+
+
+    # only show if mac is 'own'
+    # result = run_sql_wrapper(request, "SELECT * FROM locations WHERE mac='own'")
     return JsonResponse({'data': result})
 
 def get_locations_for_device(request, id):

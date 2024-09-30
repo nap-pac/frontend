@@ -1,5 +1,10 @@
 # Notes for running the project
 
+## Python Packages
+```bash
+python3 -m pip install django djangorestframework django-compressor django_cron
+```
+
 ## Tailwind watch command
 ```css
 npx tailwindcss -i ./static/src/input.css -o ./static/src/output.css --watch
@@ -35,3 +40,12 @@ while ($true) {python manage.py runcrons;start-sleep 60}
 ## Notes
 https://tailwindcss.com/docs/customizing-colors#using-custom-colors
 https://flowbite.com/docs/components/sidebar/#off-canvas-sidebar
+
+
+<!-- /etc/wpa_supplicant/wpa_supplicant.conf for wifi creds 
+https://raspberrytips.com/raspberry-pi-wifi-setup
+dest:dest528491
+Kismet web port :2501
+-->
+
+
